@@ -55,7 +55,7 @@ Reclaim space taken up by duplicate copies without treating files as duplicates 
 
 ### 4. Disk Space Analysis
 
-See where your storage is going at a glance. Drill down through a treemap and list to locate the largest folders and files instead of cleaning blindly.
+See where your storage is going at a glance. Drill down through a treemap and list to locate the largest folders and files instead of cleaning blindly. Switch between the treemap and list views when you need either a visual overview or a sortable breakdown of the same scan.
 
 > **Privacy & Security**
 
