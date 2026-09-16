@@ -47,7 +47,7 @@ Smart recommendations help you make safe choices quickly. You can also review it
 
 ### 2. Large File Cleanup
 
-Quickly find the largest files and reclaim space used by old installers, videos, archives, and other bulky content without digging through folders one by one. Sort and filter by size so the biggest reclaimable items surface first.
+Quickly find the largest files and reclaim space used by old installers, videos, archives, and other bulky content without digging through folders one by one. Sort and filter by size so the biggest reclaimable items surface first. After a scan, you can also open a file's parent folder from the results list when you need to inspect it outside MangoDisk.
 
 ### 3. Duplicate File Cleanup
 
