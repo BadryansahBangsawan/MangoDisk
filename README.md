@@ -51,7 +51,7 @@ Quickly find the largest files and reclaim space used by old installers, videos,
 
 ### 3. Duplicate File Cleanup
 
-Reclaim space taken up by duplicate copies without treating files as duplicates just because they share a name. Smart selection keeps at least one file in every group, so cleanup stays effortless and safe.
+Reclaim space taken up by duplicate copies without treating files as duplicates just because they share a name. Smart selection keeps at least one file in every group, so cleanup stays effortless and safe. Review each duplicate group in the results before deleting so you keep the copy you want.
 
 ### 4. Disk Space Analysis
 
