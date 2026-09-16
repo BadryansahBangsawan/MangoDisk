@@ -3286,7 +3286,7 @@
       },
       "project.node-build-artifacts": {
         "name": "Node.js build artifacts",
-        "description": "Dependency folders and framework build caches in Node.js projects.",
+        "description": "Dependency folders and framework build caches in Node.js projects, including nested node_modules.",
         "impact": "Source and lockfiles are kept. Dependencies and caches must be restored."
       },
       "project.react-native-build-artifacts": {
@@ -3301,7 +3301,7 @@
       },
       "project.maven-build-artifacts": {
         "name": "Maven build artifacts",
-        "description": "Compiled output under Maven project target folders.",
+        "description": "Compiled output under Maven project target folders, including nested module target directories.",
         "impact": "Source and pom.xml are kept. The next build recompiles the project."
       },
       "project.gradle-build-artifacts": {

@@ -3286,7 +3286,7 @@
       },
       "project.node-build-artifacts": {
         "name": "Node.js 빌드 산출물",
-        "description": "Node.js 프로젝트의 의존성 폴더와 프레임워크 빌드 캐시입니다.",
+        "description": "Node.js 프로젝트의 의존성 폴더와 프레임워크 빌드 캐시입니다. 중첩된 node_modules도 포함합니다.",
         "impact": "소스와 잠금 파일은 유지됩니다. 의존성과 캐시는 다시 설치해야 합니다."
       },
       "project.react-native-build-artifacts": {
@@ -3301,7 +3301,7 @@
       },
       "project.maven-build-artifacts": {
         "name": "Maven 빌드 산출물",
-        "description": "Maven 프로젝트 target 폴더 아래의 컴파일된 출력입니다.",
+        "description": "Maven 프로젝트 target 폴더 아래의 컴파일된 출력입니다. 중첩 모듈의 target도 포함합니다.",
         "impact": "소스와 pom.xml은 유지됩니다. 다음 빌드에서 프로젝트를 다시 컴파일합니다."
       },
       "project.gradle-build-artifacts": {

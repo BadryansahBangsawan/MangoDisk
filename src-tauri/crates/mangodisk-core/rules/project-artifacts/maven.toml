@@ -1,6 +1,6 @@
 id = "project.maven-build-artifacts"
 schema_version = 1
-rule_version = 1
+rule_version = 2
 platforms = ["macos", "windows"]
 category = "development"
 risk = "recoverable"
@@ -13,7 +13,15 @@ file_names_any = ["pom.xml"]
 kind = "relativeDirectory"
 path = "target"
 
+[[artifacts]]
+kind = "descendantDirectory"
+name = "target"
+max_depth = 8
+
 [verification]
 lifecycle = "verified"
-evidence = ["https://maven.apache.org/plugins/maven-clean-plugin/usage.html"]
-verified_at = "2026-07-31"
+evidence = [
+  "https://maven.apache.org/plugins/maven-clean-plugin/usage.html",
+  "https://maven.apache.org/guides/mini/guide-multiple-modules.html",
+]
+verified_at = "2026-09-16"

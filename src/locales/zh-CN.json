@@ -3286,7 +3286,7 @@
       },
       "project.node-build-artifacts": {
         "name": "Node.js 构建产物",
-        "description": "Node.js 项目的依赖目录与框架构建缓存",
+        "description": "Node.js 项目的依赖目录与框架构建缓存，包含嵌套的 node_modules",
         "impact": "源代码和锁文件会保留；依赖与缓存需要重新安装或生成。"
       },
       "project.react-native-build-artifacts": {
@@ -3301,7 +3301,7 @@
       },
       "project.maven-build-artifacts": {
         "name": "Maven 构建产物",
-        "description": "Maven 项目 target 目录中的编译输出",
+        "description": "Maven 项目 target 目录中的编译输出，包含嵌套模块的 target",
         "impact": "源码与 pom.xml 会保留；下次构建需要重新编译。"
       },
       "project.gradle-build-artifacts": {

@@ -3286,7 +3286,7 @@
       },
       "project.node-build-artifacts": {
         "name": "Node.js 建置產物",
-        "description": "Node.js 專案的相依套件資料夾與框架建置快取",
+        "description": "Node.js 專案的相依套件資料夾與框架建置快取，包含巢狀的 node_modules",
         "impact": "原始碼和鎖檔案會保留；相依套件與快取需要重新安裝或產生。"
       },
       "project.react-native-build-artifacts": {
@@ -3301,7 +3301,7 @@
       },
       "project.maven-build-artifacts": {
         "name": "Maven 建置產物",
-        "description": "Maven 專案 target 資料夾中的編譯輸出",
+        "description": "Maven 專案 target 資料夾中的編譯輸出，包含巢狀模組的 target",
         "impact": "原始碼與 pom.xml 會保留；下次建置需要重新編譯。"
       },
       "project.gradle-build-artifacts": {

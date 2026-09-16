@@ -528,6 +528,175 @@ fn discovers_nested_projects_without_entering_build_artifacts() {
     assert!(!plan.limited);
 }
 
+fn candidate_bytes(rule: &RulePlan) -> Vec<u64> {
+    let mut bytes = rule
+        .candidates
+        .iter()
+        .map(|candidate| candidate.bytes)
+        .collect::<Vec<_>>();
+    bytes.sort_unstable();
+    bytes
+}
+
+fn plan_rule<'a>(plan: &'a CatalogPlan, rule_id: &str) -> &'a RulePlan {
+    plan.rules
+        .iter()
+        .find(|rule| rule.source.id == rule_id)
+        .unwrap_or_else(|| panic!("{rule_id} must exist"))
+}
+
+#[test]
+fn discovers_nested_node_modules_without_nested_package_json() {
+    let fixture = Fixture::new("vue-monorepo");
+    let project = fixture.0.join("vue-app");
+    let root_modules = project.join("node_modules/pkg");
+    let nested_modules = project.join("apps/web/node_modules/pkg");
+    fs::create_dir_all(&root_modules).expect("root node_modules must exist");
+    fs::create_dir_all(&nested_modules).expect("nested node_modules must exist");
+    fs::write(project.join("package.json"), "{}").expect("Node marker must exist");
+    fs::write(root_modules.join("index.js"), vec![1_u8; 64]).expect("root artifact must exist");
+    fs::write(nested_modules.join("index.js"), vec![2_u8; 32]).expect("nested artifact must exist");
+
+    let rules = current_platform_rules().expect("catalog must load");
+    let plan = build_plan(
+        &[fixture.0.to_string_lossy().into_owned()],
+        false,
+        rules,
+        &|| false,
+    )
+    .expect("plan must build");
+    let node = plan_rule(&plan, "project.node-build-artifacts");
+    assert_eq!(node.candidates.len(), 2);
+    assert_eq!(candidate_bytes(node), vec![32, 64]);
+    assert!(project.join("package.json").exists());
+}
+
+#[test]
+fn nested_package_json_projects_keep_separate_node_modules() {
+    let fixture = Fixture::new("node-workspace");
+    let parent = fixture.0.join("workspace");
+    let nested = parent.join("packages/web");
+    fs::create_dir_all(parent.join("node_modules/pkg")).expect("parent node_modules must exist");
+    fs::create_dir_all(nested.join("node_modules/pkg")).expect("nested node_modules must exist");
+    fs::write(parent.join("package.json"), "{}").expect("parent Node marker must exist");
+    fs::write(nested.join("package.json"), "{}").expect("nested Node marker must exist");
+    fs::write(parent.join("node_modules/pkg/index.js"), vec![1_u8; 16])
+        .expect("parent artifact must exist");
+    fs::write(nested.join("node_modules/pkg/index.js"), vec![2_u8; 48])
+        .expect("nested artifact must exist");
+
+    let rules = current_platform_rules().expect("catalog must load");
+    let plan = build_plan(
+        &[fixture.0.to_string_lossy().into_owned()],
+        false,
+        rules,
+        &|| false,
+    )
+    .expect("plan must build");
+    let node = plan_rule(&plan, "project.node-build-artifacts");
+    assert_eq!(node.candidates.len(), 2);
+    assert_eq!(candidate_bytes(node), vec![16, 48]);
+}
+
+#[test]
+fn discovers_nested_maven_target_without_nested_pom() {
+    let fixture = Fixture::new("maven-modules");
+    let project = fixture.0.join("java-app");
+    fs::create_dir_all(project.join("target")).expect("root target must exist");
+    fs::create_dir_all(project.join("modules/core/target")).expect("nested target must exist");
+    fs::write(project.join("pom.xml"), "<project/>").expect("Maven marker must exist");
+    fs::write(project.join("target/app.bin"), vec![1_u8; 128]).expect("root artifact must exist");
+    fs::write(project.join("modules/core/target/core.bin"), vec![2_u8; 64])
+        .expect("nested artifact must exist");
+
+    let rules = current_platform_rules().expect("catalog must load");
+    let plan = build_plan(
+        &[fixture.0.to_string_lossy().into_owned()],
+        false,
+        rules,
+        &|| false,
+    )
+    .expect("plan must build");
+    let maven = plan_rule(&plan, "project.maven-build-artifacts");
+    assert_eq!(maven.candidates.len(), 2);
+    assert_eq!(candidate_bytes(maven), vec![64, 128]);
+}
+
+#[test]
+fn nested_pom_projects_keep_separate_target_directories() {
+    let fixture = Fixture::new("maven-nested-pom");
+    let parent = fixture.0.join("parent");
+    let module = parent.join("module");
+    fs::create_dir_all(parent.join("target")).expect("parent target must exist");
+    fs::create_dir_all(module.join("target")).expect("module target must exist");
+    fs::write(parent.join("pom.xml"), "<project/>").expect("parent Maven marker must exist");
+    fs::write(module.join("pom.xml"), "<project/>").expect("module Maven marker must exist");
+    fs::write(parent.join("target/parent.bin"), vec![1_u8; 32])
+        .expect("parent artifact must exist");
+    fs::write(module.join("target/module.bin"), vec![2_u8; 96])
+        .expect("module artifact must exist");
+
+    let rules = current_platform_rules().expect("catalog must load");
+    let plan = build_plan(
+        &[fixture.0.to_string_lossy().into_owned()],
+        false,
+        rules,
+        &|| false,
+    )
+    .expect("plan must build");
+    let maven = plan_rule(&plan, "project.maven-build-artifacts");
+    assert_eq!(maven.candidates.len(), 2);
+    assert_eq!(candidate_bytes(maven), vec![32, 96]);
+}
+
+#[test]
+fn nested_node_modules_inside_dependencies_are_not_separate_candidates() {
+    let fixture = Fixture::new("nested-dependency-modules");
+    let project = fixture.0.join("app");
+    let root_modules = project.join("node_modules/pkg");
+    let nested_modules = root_modules.join("node_modules/nested");
+    fs::create_dir_all(&nested_modules).expect("dependency node_modules must exist");
+    fs::write(project.join("package.json"), "{}").expect("Node marker must exist");
+    fs::write(root_modules.join("index.js"), vec![1_u8; 64]).expect("root artifact must exist");
+    fs::write(nested_modules.join("index.js"), vec![2_u8; 32]).expect("nested artifact must exist");
+
+    let rules = current_platform_rules().expect("catalog must load");
+    let plan = build_plan(
+        &[fixture.0.to_string_lossy().into_owned()],
+        false,
+        rules,
+        &|| false,
+    )
+    .expect("plan must build");
+    let node = plan_rule(&plan, "project.node-build-artifacts");
+    assert_eq!(node.candidates.len(), 1);
+    assert_eq!(node.candidates[0].bytes, 96);
+}
+
+#[test]
+fn maven_descendant_target_does_not_claim_rust_projects() {
+    let fixture = Fixture::new("rust-not-maven");
+    let project = fixture.0.join("rust-app");
+    fs::create_dir_all(project.join("target")).expect("Rust target must exist");
+    fs::write(project.join("Cargo.toml"), "[package]\nname='fixture'\n")
+        .expect("Cargo marker must exist");
+    fs::write(project.join("target/app.bin"), vec![1_u8; 128]).expect("Rust artifact must exist");
+
+    let rules = current_platform_rules().expect("catalog must load");
+    let plan = build_plan(
+        &[fixture.0.to_string_lossy().into_owned()],
+        false,
+        rules,
+        &|| false,
+    )
+    .expect("plan must build");
+    let rust = plan_rule(&plan, "project.rust-build-artifacts");
+    let maven = plan_rule(&plan, "project.maven-build-artifacts");
+    assert_eq!(rust.candidates.len(), 1);
+    assert_eq!(rust.candidates[0].bytes, 128);
+    assert!(maven.candidates.is_empty());
+}
+
 #[test]
 fn artifact_measurement_reports_file_progress_in_bounded_batches() {
     let fixture = Fixture::new("measurement-progress");
@@ -862,6 +1031,41 @@ fn cached_projects_skip_recursive_artifacts_but_keep_direct_artifacts() {
 
     assert!(drafts.iter().any(|draft| draft.path == direct_cache));
     assert!(!drafts.iter().any(|draft| draft.path == descendant_cache));
+}
+
+#[test]
+fn cached_node_projects_skip_nested_node_modules_but_keep_direct_modules() {
+    let fixture = Fixture::new("cached-node");
+    let project = fixture.0.join("vue-app");
+    let direct_modules = project.join("node_modules");
+    let descendant_modules = project.join("apps/web/node_modules");
+    fs::create_dir_all(&direct_modules).expect("direct node_modules must exist");
+    fs::create_dir_all(&descendant_modules).expect("descendant node_modules must exist");
+    fs::write(project.join("package.json"), "{}").expect("Node marker must exist");
+
+    let rules = current_platform_rules().expect("catalog must load");
+    let rule_index = rules
+        .iter()
+        .position(|rule| rule.id == "project.node-build-artifacts")
+        .expect("Node rule must exist");
+    let project = project
+        .canonicalize()
+        .expect("cached project root must be canonical");
+    let direct_modules = direct_modules
+        .canonicalize()
+        .expect("direct node_modules must be canonical");
+    let descendant_modules = descendant_modules
+        .canonicalize()
+        .expect("descendant node_modules must be canonical");
+    let projects = vec![ProjectMatch {
+        rule_index,
+        project_root: project,
+        allow_descendant_scan: false,
+    }];
+    let drafts = collect_artifact_drafts(&projects, rules, &|| false, &|_| {});
+
+    assert!(drafts.iter().any(|draft| draft.path == direct_modules));
+    assert!(!drafts.iter().any(|draft| draft.path == descendant_modules));
 }
 
 #[test]

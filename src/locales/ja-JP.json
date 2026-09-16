@@ -3286,7 +3286,7 @@
       },
       "project.node-build-artifacts": {
         "name": "Node.jsのビルド成果物",
-        "description": "Node.jsプロジェクトの依存フォルダーとフレームワークビルドキャッシュ。",
+        "description": "Node.jsプロジェクトの依存フォルダーとフレームワークビルドキャッシュ。入れ子のnode_modulesも含みます。",
         "impact": "ソースとロックファイルは保持されます。依存関係とキャッシュは復元する必要があります。"
       },
       "project.react-native-build-artifacts": {
@@ -3301,7 +3301,7 @@
       },
       "project.maven-build-artifacts": {
         "name": "Mavenのビルド成果物",
-        "description": "Mavenプロジェクトのターゲットフォルダー下のコンパイル済み出力。",
+        "description": "Mavenプロジェクトのターゲットフォルダー下のコンパイル済み出力。入れ子モジュールのtargetも含みます。",
         "impact": "ソースとpom.xmlは保持されます。次のビルドでプロジェクトが再コンパイルされます。"
       },
       "project.gradle-build-artifacts": {
