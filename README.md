@@ -85,7 +85,7 @@ Fix common problems like missing search results, incorrect icons, no sound, or n
 
 ### 10. Operation History
 
-Keep a clear record of every cleanup and system change. See how much space you recovered, what completed successfully, and whether anything still needs your attention.
+Keep a clear record of every cleanup and system change. See how much space you recovered, what completed successfully, and whether anything still needs your attention. Open past runs from Operation History when you want to re-check reclaim totals or unfinished items after a later scan.
 
 ## Resource Usage and Memory Management
 
