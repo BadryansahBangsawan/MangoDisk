@@ -71,7 +71,7 @@ Uninstall applications and clear related caches, settings, and leftovers so remo
 
 ### 7. Startup Item Management
 
-Reduce unnecessary startup delays and background resource use, so your computer starts faster and feels lighter. Turn items back on at any time when you need them again.
+Reduce unnecessary startup delays and background resource use, so your computer starts faster and feels lighter. Disable or re-enable startup items from the list without reinstalling the related apps, and turn items back on at any time when you need them again.
 
 ### 8. System Optimization
 
