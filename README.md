@@ -93,7 +93,7 @@ Keep a clear record of every cleanup and system change. See how much space you r
 
 Check CPU and memory usage, network speeds, and disk activity at a glance. See which apps use the most memory and free up memory with a click when resources are running low.
 
-Keep these details in your menu bar, taskbar, or system tray—no need to open the main window.
+Keep these details in your menu bar, taskbar, or system tray—no need to open the main window. On macOS the tray meter stays available after you close the main window, so you can free memory without reopening MangoDisk.
 
 ## AI Explanations
 
