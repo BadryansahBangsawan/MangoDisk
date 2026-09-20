@@ -230,6 +230,8 @@ Install MangoDisk on macOS with Homebrew:
 brew install --cask harry0703/tap/mangodisk
 ```
 
+After the cask install, launch MangoDisk from Applications (not only from the brew formula page). The first scan needs Full Disk Access in System Settings → Privacy & Security; without it, cleanup results stay incomplete even though the window opens.
+
 Install MangoDisk on Windows from PowerShell:
 
 ```powershell
